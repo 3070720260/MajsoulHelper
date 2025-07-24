@@ -7,7 +7,6 @@ services:
     image: arthals/majsoul-helper:latest 
     container_name: akagi
     ports:
-      - "7880:7880"
       - "8765:8765"
     volumes:
       - ./app/mitm:/root/.mitmproxy
