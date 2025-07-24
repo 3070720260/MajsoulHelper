@@ -12,7 +12,6 @@ services:
     volumes:
       - ./app/mitm:/root/.mitmproxy
       - ./app/akagi/logs:/app/Akagi/logs
-      - ./app/akagi/settings.json:/app/Akagi/settings/settings.json
     networks:
       - majsoul-network
     command: ["akagi"]
