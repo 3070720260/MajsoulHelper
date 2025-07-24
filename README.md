@@ -1,6 +1,11 @@
 # Majsoul Helper
 
-一个集成了雀魂 AI (Akagi) 和皮肤解锁 (MajsoulMax) 的辅助工具，通过 Docker 容器化部署，方便使用。
+一个集成了雀魂 AI（[Akagi](https://github.com/shinkuan/Akagi)）和皮肤解锁（[MajsoulMax](https://github.com/Avenshy/MajsoulMax)）的辅助工具，通过 Docker 容器化部署，并以前端进行展示，方便移动端使用。
+
+上述两个 Repo 在镜像里都进行了一定的修改，以适配 Docker 容器化部署，具体来说：
+
+1. 使用修改的 [MajsoulMax](https://github.com/zhuozhiyongde/MajsoulMax)，增加 HTTP Auth 和上游代理
+2. 使用修改的 [Akagi](https://github.com/zhuozhiyongde/Akagi)，移除了原有的 TUI，直接将结果推送到后端服务器
 
 ## 🐳 Docker 使用方式
 
@@ -48,7 +53,7 @@ docker compose up -d
 
 分流完成后，你还需要在前端网页中填写后端 `server` 的地址（默认 `http://127.0.0.1:3001`），从而启动前端展示。
 
-如果你想要分离 AI 计算和前端网页，你可以移除 frontend 服务，但要保证 server、akagi、majsoulmax 在一起运行。
+如果你想要分离 AI 计算和前端网页，你可以单独部署 [frontend 服务](https://github.com/zhuozhiyongde/AkagiFrontend)，但要保证 server、akagi、majsoulmax 在一起运行。
 
 你可以使用类似这样的命令进行端口转发：
 
