@@ -1,0 +1,12 @@
+# Basic
+mjai==0.2.1
+mitmproxy==11.1.2
+loguru==0.7.3
+requests==2.32.3
+jsonschema==4.23.0
+ruamel.yaml
+# PyTorch
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1
+numpy==2.1.2
+

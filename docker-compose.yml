@@ -1,0 +1,56 @@
+networks:
+  majsoul-network:
+    driver: bridge
+
+services:
+  akagi:
+    image: arthals/majsoul-helper:latest 
+    container_name: akagi
+    volumes:
+      - ./app/mitm:/root/.mitmproxy
+      - ./app/akagi/logs:/app/Akagi/logs
+      - ./app/akagi/settings.json:/app/Akagi/settings/settings.json
+    networks:
+      - majsoul-network
+    environment:
+      - AKAGI_AUTH_USERNAME=arthals
+      - AKAGI_AUTH_PASSWORD=WUHzVoKE7mPbBmfU
+    command: ["akagi"]
+
+  majsoulmax:
+    image: arthals/majsoul-helper:latest
+    container_name: majsoulmax
+    ports:
+      - "23410:23410"
+    volumes:
+      - ./app/mitm:/root/.mitmproxy
+      - ./app/majsoulmax/config:/app/MajsoulMax/config
+    depends_on:
+      - akagi
+    networks:
+      - majsoul-network
+    environment:
+      - PROXY_USERNAME=arthals
+      - PROXY_PASSWORD=WUHzVoKE7mPbBmfU
+    command: ["majsoulmax"]
+
+  server:
+    image: arthals/majsoul-helper:latest
+    container_name: server
+    ports:
+      - "3001:3001"
+    networks:
+      - majsoul-network
+    environment:
+      - AKAGI_AUTH_USERNAME=arthals
+      - AKAGI_AUTH_PASSWORD=WUHzVoKE7mPbBmfU
+    command: ["server"]
+
+  frontend:
+    image: arthals/majsoul-helper:latest
+    container_name: frontend
+    ports:
+      - "4173:4173"
+    networks:
+      - majsoul-network
+    command: ["frontend"]
