@@ -1,0 +1,45 @@
+# Use Node.js 22 on Alpine Linux as the base image
+FROM node:22-alpine
+
+# Allow passing proxy as build arguments
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+# Set environment variables for proxy
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+
+# Install git
+RUN apk add --no-cache git
+
+# Configure git to use proxy
+RUN if [ -n "$HTTP_PROXY" ]; then git config --global http.proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then git config --global https.proxy "$HTTPS_PROXY"; fi
+
+# Set the working directory
+WORKDIR /app
+
+# Clone the frontend repository
+RUN git clone https://github.com/zhuozhiyongde/AkagiFrontend.git
+
+# Set the working directory to the cloned repo
+WORKDIR /app/AkagiFrontend
+
+# Install bun
+RUN npm install -g bun
+
+# Install dependencies
+RUN bun install
+
+# Build the application
+RUN bun run build
+
+# Expose the port the app runs on
+EXPOSE 4173
+
+# Unset proxy environment variables
+ENV HTTP_PROXY=
+ENV HTTPS_PROXY=
+
+# Set the entrypoint to run the preview server
+ENTRYPOINT ["bun", "run", "preview", "--port", "4173", "--host", "0.0.0.0"]

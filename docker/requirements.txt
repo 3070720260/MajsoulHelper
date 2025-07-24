@@ -5,6 +5,7 @@ loguru==0.7.3
 requests==2.32.3
 jsonschema==4.23.0
 ruamel.yaml
+aiohttp
 # PyTorch
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.5.1

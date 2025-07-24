@@ -6,15 +6,15 @@ services:
   akagi:
     image: arthals/majsoul-helper:latest 
     container_name: akagi
+    ports:
+      - "7880:7880"
+      - "8765:8765"
     volumes:
       - ./app/mitm:/root/.mitmproxy
       - ./app/akagi/logs:/app/Akagi/logs
       - ./app/akagi/settings.json:/app/Akagi/settings/settings.json
     networks:
       - majsoul-network
-    environment:
-      - AKAGI_AUTH_USERNAME=arthals
-      - AKAGI_AUTH_PASSWORD=WUHzVoKE7mPbBmfU
     command: ["akagi"]
 
   majsoulmax:
@@ -33,24 +33,9 @@ services:
       - PROXY_USERNAME=arthals
       - PROXY_PASSWORD=WUHzVoKE7mPbBmfU
     command: ["majsoulmax"]
-
-  server:
-    image: arthals/majsoul-helper:latest
-    container_name: server
-    ports:
-      - "3001:3001"
-    networks:
-      - majsoul-network
-    environment:
-      - AKAGI_AUTH_USERNAME=arthals
-      - AKAGI_AUTH_PASSWORD=WUHzVoKE7mPbBmfU
-    command: ["server"]
-
+  
   frontend:
-    image: arthals/majsoul-helper:latest
+    image: arthals/majsoul-helper-frontend:latest
     container_name: frontend
     ports:
       - "4173:4173"
-    networks:
-      - majsoul-network
-    command: ["frontend"]

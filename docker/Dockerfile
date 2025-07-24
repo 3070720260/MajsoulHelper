@@ -1,5 +1,5 @@
 # Use Ubuntu 24.04 as base image for newer GLIBC
-FROM ubuntu:24.04
+FROM python:3.12-slim
 
 # Set non-interactive frontend for apt-get to avoid prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -15,26 +15,24 @@ ARG HTTPS_PROXY
 ENV HTTP_PROXY=$HTTP_PROXY
 ENV HTTPS_PROXY=$HTTPS_PROXY
 
+# Specify bash as the shell
+SHELL ["/bin/bash", "-c"]
+
 # Configure APT to use Aliyun mirrors for Ubuntu 24.04 (Noble Numbat)
-RUN echo "deb http://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list
+RUN apt-get update && apt-get install -y gpg && \
+    gpg --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C && \
+    gpg --export --armor 871920D1991BC93C | apt-key add - && \
+    { \
+        echo "deb http://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse"; \
+        echo "deb http://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse"; \
+        echo "deb http://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse"; \
+        echo "deb http://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse"; \
+    } > /etc/apt/sources.list
 
-# Install base dependencies, Python 3, and pip
-# On Ubuntu 24.04, python3 is python3.12
+# Install base dependencies
 RUN apt-get update && \
-    apt-get install -y curl git ca-certificates gnupg python3 python3-pip unzip && \
+    apt-get install -y curl git ca-certificates gnupg unzip && \
     rm -rf /var/lib/apt/lists/*
-
-# Install Node.js 22 using NodeSource setup script
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install bun
-RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH="/root/.bun/bin:$PATH"
 
 # Configure git to use proxy
 RUN git config --global http.proxy ${HTTP_PROXY} && \
@@ -54,17 +52,14 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
     git lfs install && \
     rm -rf /var/lib/apt/lists/*
 
+ARG CACHE_DATE=202507240459
 # Clone repositories
 RUN git clone https://github.com/zhuozhiyongde/Akagi.git && \
-    git clone https://github.com/zhuozhiyongde/AkagiFrontend.git && \
     git clone https://github.com/zhuozhiyongde/MajsoulMax.git
 
 # Install specific protobuf versions
 RUN cd Akagi && pip install --target ./vendor protobuf==5.29.3 --no-dependencies && cd ..
 RUN cd MajsoulMax && pip install --target ./vendor protobuf==3.20.1 --no-dependencies && cd ..
-
-# Build frontend
-RUN cd AkagiFrontend && bun install && bun run build
 
 # Copy entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh

@@ -20,16 +20,13 @@ docker pull arthals/majsoul-helper
 | 容器端口 | 宿主机端口 | 服务 | 用途 |
 | :--- | :--- | :--- | :--- |
 | `23410` | `23410` | MajsoulMax | **(需要暴露/反代)** 游戏主代理入口 |
-| `7880` | - | Akagi | (内部端口) AI 计算服务，不对外暴露 |
-| `3001` | `3001` | Server | **(需要暴露/反代)** 前端渲染所需的后端服务器 |
+| `7880` | - | Akagi MITM | (内部端口) AI 解析计算服务，不对外暴露 |
+| `8765` | `8765` | Akagi DataServer | **(需要暴露/反代)** 前端渲染所需的后端，用于推送 AI 推荐结果 |
 | `4173` | `4173` | Frontend | **(需要暴露/反代)** 前端预览页面 |
 
 ### 🔑 认证
 
-参见 [docker-compose.yml](docker-compose.yml) 中的环境变量设置。
-
-- **入口鉴权**：通过环境变量 `PROXY_USERNAME` 和 `PROXY_PASSWORD` 设置代理认证用户名和密码，需要给 `majsoulmax` 设置。
-- **更新鉴权**：通过环境变量 `AKAGI_AUTH_USERNAME` 和 `AKAGI_AUTH_PASSWORD` 设置 Akagi 发送往前端服务器 `/update` 的鉴权用户名和密码，需要同时给 server 和 akagi 设置。
+**入口鉴权**：通过环境变量 `PROXY_USERNAME` 和 `PROXY_PASSWORD` 设置代理认证用户名和密码，需要给 `majsoulmax` 设置。
 
 ### 🛠️ 启动服务
 
@@ -53,15 +50,14 @@ docker compose up -d
 
 分流完成后，你还需要在前端网页中填写后端 `server` 的地址（默认 `http://127.0.0.1:3001`），从而启动前端展示。
 
-如果你想要分离 AI 计算和前端网页，你可以单独部署 [frontend 服务](https://github.com/zhuozhiyongde/AkagiFrontend)，但要保证 server、akagi、majsoulmax 在一起运行。
+如果你想要分离 AI 计算和前端网页，你可以单独部署 [frontend 服务](https://github.com/zhuozhiyongde/AkagiFrontend)，但要保证 akagi、majsoulmax 在一起运行。
 
 你可以使用类似这样的命令进行端口转发：
 
 ```bash
 ssh -f -N \
     -L 0.0.0.0:23410:localhost:23410 \
-    -L 0.0.0.0:3001:localhost:3001 \
-    -L 0.0.0.0:4173:localhost:4173 \
+    -L 0.0.0.0:8765:localhost:8765 \
     ssh_server
 ```
 
@@ -71,9 +67,9 @@ ssh -f -N \
 2.  **皮肤解锁**：`MajsoulMax` 作为第一层 MITM 代理，对游戏流量进行拦截和修改，实现皮肤等资源的解锁。
 3.  **AI 分析**：`MajsoulMax` 将处理后的流量通过上游代理（Upstream Proxy）模式转发到 `http://akagi:7880`，即 `Akagi` 服务。
 4.  **AI 计算**：`Akagi` 作为第二层 MITM 代理，对游戏核心数据进行分析，调用 AI 模型进行计算，得出推荐操作。
-5.  **结果推送**：`Akagi` 将计算出的 AI 推荐结果通过 HTTP POST 请求发送给 `Server` 的 `http://server:3001/update` 后端服务器，更新推荐。
-6.  **前端渲染**：`Frontend` 前端页面通过 HTTP GET 轮询从 `Server` 的 `http://server:3001/recommandations` 后端服务器获取最新的 AI 推荐，并利用了 html2canvas 将 HTML 绘制成 Canvas，然后使用 WebRTC 形成 LiveStream，从而能够实时渲染直播流，以画中画的形式开启。
+5.  **结果推送**：`Akagi` 将计算出的 AI 推荐结果直接推送给 `DataServer` 服务，该服务会为所有已经建立的 WebSocket 连接推送最新的 AI 推荐结果。
+6.  **前端渲染**：`Frontend` 前端页面通过 WebSocket (`ws://<DataServer_IP>:8765`) 从 `DataServer` 实时接收最新的 AI 推荐，并利用了 html2canvas 将 HTML 绘制成 Canvas，然后使用 WebRTC 形成 LiveStream，从而能够实时渲染直播流，以画中画的形式开启。
 
 ## 📜 许可证
 
-本项目基于 [GPL-3.0](LICENSE) 许可证开源。
+本项目基于 [GNU General Public License v3.0](LICENSE) 许可证开源。
