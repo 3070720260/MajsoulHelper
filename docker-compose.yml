@@ -30,6 +30,9 @@ services:
     environment:
       - PROXY_USERNAME=arthals
       - PROXY_PASSWORD=WUHzVoKE7mPbBmfU
+      # 如果你需要借助 clash 链接 GitHub 更新依赖，开启
+      # - http_proxy=http://172.17.0.1:7890
+      # - https_proxy=http://172.17.0.1:7890
     command: ["majsoulmax"]
   
   frontend:

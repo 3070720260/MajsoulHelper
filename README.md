@@ -44,11 +44,60 @@ docker compose up -d
 
 信任完成后，在手机上建立代理节点，参考：[代理配置](https://arthals.ink/blog/majsoul#%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE)
 
-1. 类型为 `HTTP`，地址为你的服务器，端口为 `majsoulmax` 的端口（默认 `23410`）。
+1. 类型为 `HTTPS`，地址为你的服务器，端口为 `majsoulmax` 的端口（默认 `23410`），设置 `skip-cert-verify` 为 `True`
 2. 如果有鉴权，需要设置用户名和密码。
 3. 为软件分流到上述节点，具体操作可参考上述博文。
 
-分流完成后，你还需要在前端网页中填写后端 `server` 的地址（默认 `http://127.0.0.1:3001`），从而启动前端展示。
+参考配置如下。
+
+Clash：
+
+```yaml
+proxies:
+    - name: MajsoulAI
+      port: 23410
+      server: your server ip
+      tls: true
+      type: http
+      skip-cert-verify: true
+      username: 'PROXY_USERNAME'
+      password: 'PROXY_PASSWORD'
+proxy-groups:
+    - name: 🀄 雀魂麻将
+      proxies:
+          - MajsoulAI
+          - DIRECT
+      type: select
+rules:
+    - DOMAIN-KEYWORD,majsoul,🀄 雀魂麻将
+    - DOMAIN-KEYWORD,maj-soul,🀄 雀魂麻将
+    - DOMAIN-KEYWORD,catmjstudio,🀄 雀魂麻将
+    - DOMAIN-KEYWORD,catmajsoul,🀄 雀魂麻将
+    - IP-CIDR,146.66.155.0/24,🀄 雀魂麻将
+    - IP-CIDR,185.25.182.18/32,🀄 雀魂麻将
+    - IP-CIDR,203.107.63.200/32,🀄 雀魂麻将
+```
+
+Surge：
+
+```text
+[Proxy]
+MajsoulAI = https, your_server_ip, 23410, username, password, skip-cert-verify=true
+
+[Proxy Group]
+🀄 雀魂麻将 = select, MajsoulAI, DIRECT
+
+[Rule]
+DOMAIN-KEYWORD,majsoul,🀄 雀魂麻将
+DOMAIN-KEYWORD,maj-soul,🀄 雀魂麻将
+DOMAIN-KEYWORD,catmjstudio,🀄 雀魂麻将
+DOMAIN-KEYWORD,catmajsoul,🀄 雀魂麻将
+IP-CIDR,146.66.155.0/24,🀄 雀魂麻将
+IP-CIDR,185.25.182.18/32,🀄 雀魂麻将
+IP-CIDR,203.107.63.200/32,🀄 雀魂麻将
+```
+
+分流完成后，你还需要在前端网页中填写后端 `server` 的地址（默认 `ws://127.0.0.1:3001`），从而启动前端展示，注意 `https` 网页必须使用 `wss` 协议。
 
 如果你想要分离 AI 计算和前端网页，你可以单独部署 [frontend 服务](https://github.com/zhuozhiyongde/AkagiFrontend)，但要保证 akagi、majsoulmax 在一起运行。
 
