@@ -15,7 +15,7 @@ docker pull arthals/majsoul-helper
 
 配置项：
 
-### 🔌 端口映射
+### 🔌 端口映射与代理配置
 
 | 容器端口 | 宿主机端口 | 服务 | 用途 |
 | :--- | :--- | :--- | :--- |
@@ -23,6 +23,8 @@ docker pull arthals/majsoul-helper
 | `7880` | - | Akagi MITM | (内部端口) AI 解析计算服务，不对外暴露 |
 | `8765` | `8765` | Akagi DataServer | **(需要暴露/反代)** 前端渲染所需的后端，用于推送 AI 推荐结果 |
 | `4173` | `4173` | Frontend | **(需要暴露/反代)** 前端预览页面 |
+
+`MajsoulMax` 服务需要通过 GitHub 更新依赖，所以你可能需要为之设置 `http_proxy` 和 `https_proxy` 环境变量，如 `http_proxy=http://172.17.0.1:7890`。具体参见示例 `docker-compose.yml`。
 
 ### 🔑 认证
 
@@ -32,6 +34,12 @@ docker pull arthals/majsoul-helper
 
 ```bash
 docker compose up -d
+```
+
+所需操作的配置文件和日志都会生成在 `./app` 目录下，不过为了编辑、查看这些文件，你可能需要首先执行：
+
+```bash
+sudo chmod -R 777 ./app
 ```
 
 ### 🌟 配置 & 使用
