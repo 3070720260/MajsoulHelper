@@ -42,6 +42,8 @@ docker compose up -d
 sudo chmod -R 777 ./app
 ```
 
+注意，一定要使用挂载卷来挂载 `majsoulmax` 的 `proto` 目录，否则首次启动服务器后，`config` 会更新而实际的依赖并未更新，会导致后续如果重启服务（如修改配置），依赖的实际版本和 `config` 记录的版本不一样，导致错误。这可能体现在某些新皮肤、角色（如 Saber）没有，或者直接导致程序出错。
+
 ### 🌟 配置 & 使用
 
 对于手机来讲，分流的操作完全类似于 MajsoulMax 的配置，你可以参考 [这篇教程](https://arthals.ink/blog/majsoul)

@@ -23,6 +23,7 @@ services:
     volumes:
       - ./app/mitm:/root/.mitmproxy
       - ./app/majsoulmax/config:/app/MajsoulMax/config
+      - majsoulmax_proto:/app/MajsoulMax/proto
     depends_on:
       - akagi
     networks:
@@ -33,6 +34,7 @@ services:
       # 如果你需要借助 clash 链接 GitHub 更新依赖，开启
       # - http_proxy=http://172.17.0.1:7890
       # - https_proxy=http://172.17.0.1:7890
+    # command: ["sleep", "infinity"]
     command: ["majsoulmax"]
   
   frontend:
@@ -40,3 +42,6 @@ services:
     container_name: frontend
     ports:
       - "4173:4173"
+# 持久化，避免 config 记录的 proto 版本和实际不一致
+volumes:
+  majsoulmax_proto:
