@@ -19,7 +19,7 @@ RUN if [ -n "$HTTP_PROXY" ]; then git config --global http.proxy "$HTTP_PROXY"; 
 # Set the working directory
 WORKDIR /app
 
-ARG CACHE_DATE=202507252330
+ARG CACHE_DATE=202507270600
 
 # Clone the frontend repository
 RUN git clone https://github.com/zhuozhiyongde/AkagiFrontend.git

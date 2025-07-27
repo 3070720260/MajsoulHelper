@@ -10,7 +10,9 @@ case "$1" in
     majsoulmax)
         echo "Starting MajsoulMax..."
         cd /app/MajsoulMax
-        exec mitmdump -p 23410 --mode upstream:http://akagi:7880 -s addons.py --ssl-insecure
+        # 获取 upstream 环境变量，默认 http://akagi:7880
+        upstream=${UPSTREAM:-http://akagi:7880}
+        exec mitmdump -p 23410 --mode upstream:"$upstream" -s addons.py --ssl-insecure
         ;;
     *)
         exec "$@"

@@ -11,6 +11,7 @@
 
 ```bash
 docker pull arthals/majsoul-helper
+docker pull arthals/majsoul-helper-frontend
 ```
 
 配置项：
@@ -24,7 +25,9 @@ docker pull arthals/majsoul-helper
 | `8765` | `8765` | Akagi DataServer | **(需要暴露/反代)** 前端渲染所需的后端，用于推送 AI 推荐结果 |
 | `4173` | `4173` | Frontend | **(需要暴露/反代)** 前端预览页面 |
 
-`MajsoulMax` 服务需要通过 GitHub 更新依赖，所以你可能需要为之设置 `http_proxy` 和 `https_proxy` 环境变量，如 `http_proxy=http://172.17.0.1:7890`。具体参见示例 `docker-compose.yml`。
+`majsoulmax` 服务需要通过 GitHub 更新依赖，所以你可能需要为之设置 `http_proxy` 和 `https_proxy` 环境变量，如 `http_proxy=http://172.17.0.1:7890`。具体参见示例 `docker-compose.yml`。
+
+同时，考虑到多账号分离部署的情况，你可以为 `majsoulmax` 设置上游代理，如 `http://akagi-1:7880`（默认 `http://akagi:7880`），从而实现多账号分离部署。
 
 ### 🔑 认证
 
