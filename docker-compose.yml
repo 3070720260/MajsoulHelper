@@ -41,7 +41,7 @@ services:
     image: arthals/majsoul-helper-frontend:latest
     container_name: frontend
     ports:
-      - "4173:4173"
+      - "80:80"
 # 持久化，避免 config 记录的 proto 版本和实际不一致
 volumes:
   majsoulmax_proto:

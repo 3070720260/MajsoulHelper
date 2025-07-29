@@ -52,7 +52,7 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
     git lfs install && \
     rm -rf /var/lib/apt/lists/*
 
-ARG CACHE_DATE=20250727
+ARG CACHE_DATE=20250729
 # Clone repositories
 RUN git clone https://github.com/zhuozhiyongde/Akagi.git && \
     git clone https://github.com/zhuozhiyongde/MajsoulMax.git

@@ -23,7 +23,7 @@ docker pull arthals/majsoul-helper-frontend
 | `23410` | `23410` | MajsoulMax | **(需要暴露/反代)** 游戏主代理入口 |
 | `7880` | - | Akagi MITM | (内部端口) AI 解析计算服务，不对外暴露 |
 | `8765` | `8765` | Akagi DataServer | **(需要暴露/反代)** 前端渲染所需的后端，用于推送 AI 推荐结果 |
-| `4173` | `4173` | Frontend | **(需要暴露/反代)** 前端预览页面 |
+| `80` | `80` | Frontend | **(需要暴露/反代)** 前端预览页面 |
 
 `majsoulmax` 服务需要通过 GitHub 更新依赖，所以你可能需要为之设置 `http_proxy` 和 `https_proxy` 环境变量，如 `http_proxy=http://172.17.0.1:7890`。具体参见示例 `docker-compose.yml`。
 
