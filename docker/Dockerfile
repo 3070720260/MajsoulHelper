@@ -8,8 +8,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
 # Allow passing proxy as build arguments
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
+ARG HTTP_PROXY=""
+ARG HTTPS_PROXY=""
 
 # Set environment variables for proxy
 ENV HTTP_PROXY=$HTTP_PROXY
@@ -19,9 +19,9 @@ ENV HTTPS_PROXY=$HTTPS_PROXY
 SHELL ["/bin/bash", "-c"]
 
 # Configure APT to use Aliyun mirrors for Ubuntu 24.04 (Noble Numbat)
-RUN apt-get update && apt-get install -y gpg && \
+RUN apt-get update && apt-get install -y gpg curl && \
     gpg --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C && \
-    gpg --export --armor 871920D1991BC93C | apt-key add - && \
+    gpg --export 871920D1991BC93C > /etc/apt/trusted.gpg.d/ubuntu-archive.gpg && \
     { \
         echo "deb http://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse"; \
         echo "deb http://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse"; \
@@ -29,14 +29,15 @@ RUN apt-get update && apt-get install -y gpg && \
         echo "deb http://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse"; \
     } > /etc/apt/sources.list
 
+
 # Install base dependencies
 RUN apt-get update && \
     apt-get install -y curl git ca-certificates gnupg unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure git to use proxy
-RUN git config --global http.proxy ${HTTP_PROXY} && \
-    git config --global https.proxy ${HTTPS_PROXY}
+#RUN git config --global http.proxy ${HTTP_PROXY} && \
+ #   git config --global https.proxy ${HTTPS_PROXY}
 
 # Configure pip to use Tsinghua mirror
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
